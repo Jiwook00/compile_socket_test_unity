@@ -1,23 +1,25 @@
-import logo from './logo.svg';
-import './App.css';
+import { io } from "socket.io-client";
+import { useEffect, useState } from "react";
+
+const socket = io(`http://localhost:8080/compile`, {
+  autoConnect: false,
+});
 
 function App() {
+  const [code, setCode] = useState();
+  useEffect(() => {
+    socket.open();
+    socket.once("connect", () => {
+      socket.on("unity", (data) => {
+        console.log("::unity::", data);
+        setCode(data);
+      });
+    });
+  });
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <header className="App-header"></header>
+      <div>{code}</div>
     </div>
   );
 }
